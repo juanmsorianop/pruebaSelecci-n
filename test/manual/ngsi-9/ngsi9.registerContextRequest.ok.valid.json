@@ -1,0 +1,31 @@
+{
+  "registerContextRequest": {
+    "contextRegistrationList": {
+      "contextRegistration": {
+        "entityIdList": {
+          "entityId": [
+            {
+              "type": "Room",
+              "isPattern": "false",
+              "id": "ConferenceRoom"
+            },
+            {
+              "type": "Room",
+              "isPattern": "false",
+              "id": "OfficeRoom"
+            }
+          ]
+        },
+        "contextRegistrationAttributeList": {
+          "contextRegistrationAttribute": {
+            "name": "temperature",
+            "type": "degree"
+          }
+        },
+        "providingApplication": "http://192.168.100.1:70/application"
+      }
+    },
+    "duration": "PT1M",
+    "registrationId": "012345678901234567890123"
+  }
+}

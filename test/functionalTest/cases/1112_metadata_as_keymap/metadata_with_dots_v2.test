@@ -1,0 +1,145 @@
+# Copyright 2016 Telefonica Investigacion y Desarrollo, S.A.U
+#
+# This file is part of Orion Context Broker.
+#
+# Orion Context Broker is free software: you can redistribute it and/or
+# modify it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# Orion Context Broker is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+# General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with Orion Context Broker. If not, see http://www.gnu.org/licenses/.
+#
+# For those usages not covered by this license please contact with
+# iot_support at tid dot es
+
+# VALGRIND_READY - to mark the test ready for valgrindTestSuite.sh
+
+--NAME--
+Metadata with dot in the name (NGSIv2)
+
+--SHELL-INIT--
+dbInit CB
+brokerStart CB
+
+--SHELL--
+
+# 01. Create entity with metadata with dot in the name
+# 02. Retrieve entity
+# 03. Check the '=' in DB
+
+echo "01. Create entity with metadata with dot in the name"
+echo "===================================================="
+url="/v2/entities"
+payload='{
+  "id": "E",
+  "type": "T",
+  "A": {
+    "value": "foo",
+    "type": "T",
+    "metadata": {
+      "m.x": {
+        "type": "string",
+        "value": "black"
+      },
+      "m.y": {
+        "type": "double",
+        "value": 5
+      }
+    }
+  }
+}'
+orionCurl --url "$url" --payload "${payload}"
+echo
+echo
+
+
+echo "02. Retrieve entity"
+echo "==================="
+orionCurl --url "/v2/entities/E"
+echo
+echo
+
+
+echo "03. Check the '=' in DB"
+echo "======================="
+mongoCmd ${CB_DB_NAME} 'db.entities.findOne({ "_id" : { "id" : "E",  "type": "T", "servicePath" : "/" } }, {_id:0, attrs: 1})' | python ${SCRIPT_HOME}/jsonBeautifier.py
+echo
+echo
+
+
+--REGEXPECT--
+01. Create entity with metadata with dot in the name
+====================================================
+HTTP/1.1 201 Created
+Date: REGEX(.*)
+Fiware-Correlator: REGEX([0-9a-f\-]{36})
+Location: /v2/entities/E?type=T
+Content-Length: 0
+
+
+
+02. Retrieve entity
+===================
+HTTP/1.1 200 OK
+Date: REGEX(.*)
+Fiware-Correlator: REGEX([0-9a-f\-]{36})
+Content-Type: application/json
+Content-Length: 139
+
+{
+    "A": {
+        "metadata": {
+            "m.x": {
+                "type": "string",
+                "value": "black"
+            },
+            "m.y": {
+                "type": "double",
+                "value": 5
+            }
+        },
+        "type": "T",
+        "value": "foo"
+    },
+    "id": "E",
+    "type": "T"
+}
+
+
+03. Check the '=' in DB
+=======================
+{
+    "attrs": {
+        "A": {
+            "creDate": REGEX(.*),
+            "md": {
+                "m=x": {
+                    "type": "string",
+                    "value": "black"
+                },
+                "m=y": {
+                    "type": "double",
+                    "value": 5
+                }
+            },
+            "mdNames": [
+                "m.x",
+                "m.y"
+            ],
+            "modDate": REGEX(.*),
+            "type": "T",
+            "value": "foo"
+        }
+    }
+}
+
+
+--TEARDOWN--
+brokerStop CB
+dbDrop CB

@@ -1,0 +1,3 @@
+entityId,entityType,temperature<Float>,humidity<Integer>
+sensor3,Sensor,26.5,65
+sensor4,Sensor,27.0,58

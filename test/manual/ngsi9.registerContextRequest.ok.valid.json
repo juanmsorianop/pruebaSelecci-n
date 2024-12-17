@@ -1,0 +1,30 @@
+{
+  "contextRegistrations": [
+  {
+    "entities": [
+      {
+         "type": "Room",
+         "isPattern": "false",
+         "id": "Room1"
+      },
+      {
+        "type": "Room",
+        "isPattern": "false",
+        "id": "Room2"
+      }
+    ],
+    "attributes": [
+      {
+        "name": "temperature",
+        "type": "centigrade"
+      },
+      {
+        "name": "pressure",
+        "type": "mmHg"
+      }
+    ],
+    "providingApplication": "http://mysensors.com/Rooms"
+    }
+ ],
+ "duration": "P1M"
+}
